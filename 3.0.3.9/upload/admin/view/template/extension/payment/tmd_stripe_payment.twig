@@ -1,0 +1,190 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-stripe-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {{ getkeyform }}
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-stripe-payment" class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{ entry_pay_title }}</label>
+            <div class="col-sm-10">
+              {% for language in languages %}
+              <div class="input-group"> <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>
+                <input type="text" name="payment_tmd_stripe_payment_title[{{ language.language_id }}][title]" value="{{ payment_tmd_stripe_payment_title[language.language_id] ? payment_tmd_stripe_payment_title[language.language_id].title }}" placeholder="{{ entry_pay_title }}" class="form-control" />
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-transaction_mode">{{ entry_transaction_mode }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tmd_stripe_payment_transaction_mode" id="input-transaction_mode" class="form-control transaction_mode">
+                {% if payment_tmd_stripe_payment_transaction_mode=='test' %}
+                <option value="test" selected="selected">{{ text_test }}</option>
+                <option value="live">{{ text_live }}</option>
+                {% else %}
+                <option value="test">{{ text_test }}</option>
+                <option value="live" selected="selected">{{ text_live }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group test-mode required">
+            <label class="col-sm-2 control-label" for="input-test-public-key">{{ entry_test_p_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_test_public_key" value="{{ payment_tmd_stripe_payment_test_public_key }}" placeholder="{{ entry_test_p_key }}" id="input-test-secret-key" class="form-control" />
+              {% if error_test_public_key %}
+              <div class="text-danger">{{ error_test_public_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group test-mode required">
+            <label class="col-sm-2 control-label" for="input-test-secret-key">{{ entry_test_s_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_test_secret_key" value="{{ payment_tmd_stripe_payment_test_secret_key }}" placeholder="{{ entry_test_s_key }}" id="input-transaction_key" class="form-control" />
+              {% if error_test_secret_key %}
+              <div class="text-danger">{{ error_test_secret_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group live-mode required">
+            <label class="col-sm-2 control-label" for="input-live-public-key">{{ entry_live_p_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_live_public_key" value="{{ payment_tmd_stripe_payment_live_public_key }}" placeholder="{{ entry_live_p_key }}" id="input-live-public-key" class="form-control" />
+              {% if error_live_public_key %}
+              <div class="text-danger">{{ error_live_public_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group live-mode required">
+            <label class="col-sm-2 control-label" for="input-live-secret-key">{{ entry_live_s_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_live_secret_key" value="{{ payment_tmd_stripe_payment_live_secret_key }}" placeholder="{{ entry_live_s_key }}" id="input-live-secret-key" class="form-control" />
+              {% if error_live_secret_key %}
+              <div class="text-danger">{{ error_live_secret_key }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-total"><span data-toggle="tooltip" title="{{ help_total }}">{{ entry_total }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_total" value="{{ payment_tmd_stripe_payment_total }}" placeholder="{{ entry_total }}" id="input-total" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-order-status">{{ entry_order_status }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tmd_stripe_payment_order_status_id" id="input-order-status" class="form-control">
+                {% for order_status in order_statuses %}
+                {% if order_status.order_status_id == payment_tmd_stripe_payment_order_status_id %}
+                <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                {% else %}
+                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-geo-zone">{{ entry_geo_zone }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tmd_stripe_payment_geo_zone_id" id="input-geo-zone" class="form-control">
+                <option value="0">{{ text_all_zones }}</option>
+                {% for geo_zone in geo_zones %}
+                {% if geo_zone.geo_zone_id == payment_tmd_stripe_payment_geo_zone_id %}
+                <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                {% else %}
+                <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+         
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="payment_tmd_stripe_payment_status" id="input-status" class="form-control">
+                {% if payment_tmd_stripe_payment_status %}
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                <option value="0">{{ text_disabled }}</option>
+                {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-max_capture_dela"><span data-toggle="tooltip" title="{{ help_capture_delay }}">{{ entry_max_capture_delay }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_max_capture_delay" value="{{ payment_tmd_stripe_payment_max_capture_delay }}" placeholder="{{ entry_max_capture_delay }}" id="input-sort-order" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_sort_order" value="{{ payment_tmd_stripe_payment_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-charge-mode"><span data-toggle="tooltip" title="{{ help_charge_mode }}">{{ entry_charge_mode }}</span></label>
+            <div class="col-sm-10">
+              <select name="payment_tmd_stripe_payment_charge_mode" id="input-charge-mode" class="form-control">
+                {% if payment_tmd_stripe_payment_charge_mode=='capture' %}
+                <option value="capture" selected="selected">{{ text_capture }}</option>
+                <option value="authoriz">{{ text_authorize }}</option>
+                {% else %}
+                <option value="capture">{{ text_capture }}</option>
+                <option value="authoriz" selected="selected">{{ text_authorize }}</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-custom-desc">{{ entry_custom_desc }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_tmd_stripe_payment_custom_description" value="{{ payment_tmd_stripe_payment_custom_description }}" placeholder="{{ entry_custom_desc }}" id="input-custom-desc" class="form-control" />
+              Custom Text Show in Stripe Dashboard Available Variable : {fullname}, {order_id}, {total}, {currency} Leave it empty for default description 'Order #ID'
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).on('change','.transaction_mode',function() {
+  var transaction_mode = this.value;
+  if(transaction_mode=='live') {
+    $('.test-mode').hide();
+    $('.live-mode').show();
+  } else {
+    $('.test-mode').show();
+    $('.live-mode').hide();
+  }
+});
+$('.transaction_mode').trigger('change');
+</script>
+{{ footer }} 

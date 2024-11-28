@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>TMD Stripe Payment </name>
+	<id>TMD Stripe Payment</id>
+	<version>1.0</version>
+	<code>#TSP</code>
+	<author>TMD</author>
+	<link>https://www.opencartextensions.in/</link>
+
+	<file path="catalog/controller/checkout/checkout.php">
+		<operation error="skip">
+			<search><![CDATA[$data['breadcrumbs'] = array();]]></search>
+			<add position="before"><![CDATA[
+			// Required by Stripe Payment
+				if ($this->config->get('payment_tmd_stripe_payment_status')) {
+					$this->document->addScript('https://js.stripe.com/v3/');
+					
+				}
+			]]></add>
+		</operation>
+	</file>
+</modification>
